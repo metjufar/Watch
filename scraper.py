@@ -14,16 +14,26 @@ import json
 import sys
 import time
 from datetime import datetime, timezone
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
 
-HEADERS = {
+BROWSER_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                   "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+    "Sec-Ch-Ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+    "Sec-Ch-Ua-Mobile": "?0",
+    "Sec-Ch-Ua-Platform": '"Windows"',
 }
 REQUEST_TIMEOUT = 30
 DELAY_BETWEEN_SITES = 2  # seconds, be polite
@@ -78,16 +88,33 @@ def dedupe(items):
     return out
 
 
-def scrape_site(site):
-    resp = requests.get(site["url"], headers=HEADERS, timeout=REQUEST_TIMEOUT)
+def scrape_site(site, session):
+    url = site["url"]
+    parsed = urlparse(url)
+    homepage = f"{parsed.scheme}://{parsed.netloc}/"
+
+    # Warm up: visit the homepage first so any cookies/challenge cookies
+    # get set, same as a real browser landing on the site before
+    # clicking through to an inner page. Ignore failures here — some
+    # sites' homepage differs enough that this isn't needed.
+    try:
+        session.get(homepage, headers=BROWSER_HEADERS, timeout=REQUEST_TIMEOUT)
+        time.sleep(1)
+    except requests.RequestException:
+        pass
+
+    headers = dict(BROWSER_HEADERS)
+    headers["Referer"] = homepage
+
+    resp = session.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
     resp.raise_for_status()
     soup = BeautifulSoup(resp.text, "html.parser")
 
     mode = site.get("mode", "pdf_links")
     if mode == "pdf_links":
-        items = extract_pdf_links(soup, site["url"])
+        items = extract_pdf_links(soup, url)
     elif mode == "article_links":
-        items = extract_article_links(soup, site["url"], site["selector"])
+        items = extract_article_links(soup, url, site["selector"])
     else:
         raise ValueError(f"Unknown mode: {mode}")
 
@@ -103,12 +130,13 @@ def main():
     state = load_json("state/seen.json", {})
     new_findings = []
     errors = []
+    session = requests.Session()
 
     for i, site in enumerate(sites):
         name = site["name"]
         print(f"Checking: {name} ...")
         try:
-            items = scrape_site(site)
+            items = scrape_site(site, session)
         except Exception as e:
             msg = f"ERROR scraping '{name}': {e}"
             print(msg, file=sys.stderr)
