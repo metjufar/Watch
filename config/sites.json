@@ -1,0 +1,43 @@
+[
+  {
+    "name": "GRDA - Documents & Policy Positions",
+    "url": "https://grda.mt/category-publication/documents-policy-positions/",
+    "mode": "pdf_links"
+  },
+  {
+    "name": "Central Bank of Malta - All Publications & Research",
+    "url": "https://www.centralbankmalta.org/en/all-pubs-res",
+    "mode": "pdf_links"
+  },
+  {
+    "name": "Standards Commissioner - Other Documents",
+    "url": "https://standardscommissioner.mt/other-documents/",
+    "mode": "pdf_links"
+  },
+  {
+    "name": "Standards Commissioner - Case Reports",
+    "url": "https://standardscommissioner.mt/case-reports/",
+    "mode": "pdf_links"
+  },
+  {
+    "name": "Standards Commissioner - Annual Reports",
+    "url": "https://standardscommissioner.mt/annual-reports/",
+    "mode": "pdf_links"
+  },
+  {
+    "name": "Malta Chamber - Policy Positions",
+    "url": "https://maltachamber.org.mt/policy-positions/",
+    "mode": "pdf_links"
+  },
+  {
+    "name": "Government Gazette Repository",
+    "url": "https://www.gov.mt/en/Government/DOI/Government%20Gazette/Pages/Government-Gazzette-Repository.aspx",
+    "mode": "pdf_links"
+  },
+  {
+    "name": "NSO Malta - News Releases",
+    "url": "https://nso.gov.mt/news-releases/",
+    "mode": "article_links",
+    "selector": "h5 a, h6 a, .elementor-post__title a, article a"
+  }
+]

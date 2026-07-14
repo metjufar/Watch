@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document Monitor</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #171a21;
+    --border: #262a34;
+    --text: #e6e8eb;
+    --muted: #9aa1ac;
+    --accent: #5b8cff;
+    --new: #2ecc71;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 32px 16px 80px;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  .status {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 18px; margin-bottom: 24px;
+    font-size: 0.85rem; color: var(--muted);
+  }
+  .status b { color: var(--text); }
+  input[type="text"] {
+    width: 100%; padding: 10px 14px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--card); color: var(--text);
+    font-size: 0.95rem; margin-bottom: 20px;
+  }
+  .item {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+  }
+  .item.is-new { border-color: var(--new); }
+  .item-main { min-width: 0; }
+  .item-title { font-weight: 600; margin-bottom: 4px; word-break: break-word; }
+  .item-title a { color: var(--text); text-decoration: none; }
+  .item-title a:hover { color: var(--accent); }
+  .item-meta { font-size: 0.8rem; color: var(--muted); }
+  .badge {
+    flex-shrink: 0; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em;
+    background: var(--new); color: #05170c; padding: 3px 8px; border-radius: 999px;
+    text-transform: uppercase;
+  }
+  .empty { color: var(--muted); text-align: center; padding: 60px 20px; }
+  .site-tag {
+    display: inline-block; font-size: 0.75rem; color: var(--accent);
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Document Monitor</h1>
+  <div class="sub">Tracked publications across your configured sites.</div>
+
+  <div class="status" id="status">Loading…</div>
+
+  <input type="text" id="search" placeholder="Filter by title or site…">
+
+  <div id="list"></div>
+</div>
+
+<script>
+const DATA_URL = 'data/findings.json';
+const LAST_RUN_URL = 'data/last_run.json';
+const LAST_SEEN_KEY = 'doc-monitor-last-seen-visit';
+
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleString(undefined, {
+    year: 'numeric', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+async function load() {
+  const listEl = document.getElementById('list');
+  const statusEl = document.getElementById('status');
+  const searchEl = document.getElementById('search');
+
+  let findings = [];
+  let lastRun = null;
+
+  try {
+    findings = await (await fetch(DATA_URL, {cache: 'no-store'})).json();
+  } catch (e) {
+    listEl.innerHTML = '<div class="empty">Could not load data/findings.json yet. Run the checker at least once.</div>';
+    return;
+  }
+  try {
+    lastRun = await (await fetch(LAST_RUN_URL, {cache: 'no-store'})).json();
+  } catch (e) { /* fine if missing */ }
+
+  const previousVisit = localStorage.getItem(LAST_SEEN_KEY);
+  const previousVisitTime = previousVisit ? new Date(previousVisit) : null;
+
+  statusEl.innerHTML = `
+    <span><b>${findings.length}</b> tracked document(s) in log</span>
+    ${lastRun ? `<span>Last checked: <b>${fmtDate(lastRun.ran_at)}</b></span>` : ''}
+    ${lastRun ? `<span><b>${lastRun.sites_checked}</b> sites monitored</span>` : ''}
+    ${lastRun && lastRun.errors && lastRun.errors.length ? `<span style="color:#e6785c">${lastRun.errors.length} site(s) had errors last run</span>` : ''}
+  `;
+
+  function render(filterText) {
+    const f = filterText ? filterText.toLowerCase() : '';
+    const filtered = findings.filter(item =>
+      !f || item.title.toLowerCase().includes(f) || item.site.toLowerCase().includes(f)
+    );
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = '<div class="empty">No documents found yet — or none match your filter.</div>';
+      return;
+    }
+
+    listEl.innerHTML = filtered.map(item => {
+      const isNew = previousVisitTime && new Date(item.found_at) > previousVisitTime;
+      return `
+        <div class="item ${isNew ? 'is-new' : ''}">
+          <div class="item-main">
+            <div class="site-tag">${item.site}</div>
+            <div class="item-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>
+            <div class="item-meta">Found ${fmtDate(item.found_at)}</div>
+          </div>
+          ${isNew ? '<span class="badge">New</span>' : ''}
+        </div>
+      `;
+    }).join('');
+  }
+
+  render('');
+  searchEl.addEventListener('input', (e) => render(e.target.value));
+
+  // mark this visit so next time we know what's "new"
+  localStorage.setItem(LAST_SEEN_KEY, new Date().toISOString());
+}
+
+load();
+</script>
+</body>
+</html>
