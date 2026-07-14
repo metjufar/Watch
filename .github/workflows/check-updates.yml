@@ -1,33 +1,24 @@
 name: Check for new documents
-
 on:
   schedule:
-    # Every 6 hours. Edit this to change frequency.
-    # Format: minute hour day month weekday (UTC time)
     - cron: '0 */6 * * *'
-  workflow_dispatch: {}   # lets you trigger it manually from the Actions tab
-
+  workflow_dispatch: {}
 permissions:
   contents: write
-
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
       - name: Install dependencies
         run: pip install -r requirements.txt
-
       - name: Run scraper
         run: python scraper.py
-
       - name: Commit updated data
         run: |
           git config user.name "doc-monitor-bot"
@@ -36,6 +27,6 @@ jobs:
           git diff --staged --quiet || git commit -m "Update document tracking data [skip ci]"
           for i in 1 2 3; do
             git pull --rebase origin main && git push && break
-            echo "Push attempt $i failed, retrying..."
+            echo "retrying..."
             sleep 5
           done
