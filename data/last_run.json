@@ -1,7 +1,7 @@
 {
-  "ran_at": "2026-07-14T11:37:03.986686+00:00",
+  "ran_at": "2026-07-14T14:14:15.410662+00:00",
   "sites_checked": 8,
-  "new_items": 271,
+  "new_items": 0,
   "errors": [
     "ERROR scraping 'Central Bank of Malta - All Publications & Research': 403 Client Error: Forbidden for url: https://www.centralbankmalta.org/en/all-pubs-res",
     "ERROR scraping 'Government Gazette Repository': 403 Client Error: Forbidden for url: https://www.gov.mt/en/Government/DOI/Government%20Gazette/Pages/Government-Gazzette-Repository.aspx",
