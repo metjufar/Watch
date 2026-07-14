@@ -13,6 +13,7 @@
     --muted: #9aa1ac;
     --accent: #5b8cff;
     --new: #2ecc71;
+    --warn: #e6b25c;
   }
   * { box-sizing: border-box; }
   body {
@@ -32,6 +33,22 @@
     font-size: 0.85rem; color: var(--muted);
   }
   .status b { color: var(--text); }
+  .manual-section {
+    background: var(--card); border: 1px solid var(--warn);
+    border-radius: 10px; padding: 16px 18px; margin-bottom: 24px;
+  }
+  .manual-title {
+    font-weight: 700; font-size: 0.85rem; color: var(--warn);
+    text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 6px;
+  }
+  .manual-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 12px; }
+  .manual-links { display: flex; flex-direction: column; gap: 8px; }
+  .manual-links a {
+    color: var(--text); text-decoration: none; font-size: 0.9rem;
+    padding: 8px 12px; background: var(--bg); border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+  .manual-links a:hover { border-color: var(--accent); color: var(--accent); }
   input[type="text"] {
     width: 100%; padding: 10px 14px; border-radius: 8px;
     border: 1px solid var(--border); background: var(--card); color: var(--text);
@@ -66,6 +83,16 @@
   <div class="sub">Tracked publications across your configured sites.</div>
 
   <div class="status" id="status">Loading…</div>
+
+  <div class="manual-section">
+    <div class="manual-title">Check these manually</div>
+    <div class="manual-sub">These sites block automated checking, so they're not tracked automatically. Visit them directly now and then.</div>
+    <div class="manual-links">
+      <a href="https://www.centralbankmalta.org/en/all-pubs-res" target="_blank" rel="noopener">Central Bank of Malta — All Publications & Research</a>
+      <a href="https://nso.gov.mt/news-releases/" target="_blank" rel="noopener">NSO Malta — News Releases</a>
+      <a href="https://www.gov.mt/en/Government/DOI/Government%20Gazette/Pages/Government-Gazzette-Repository.aspx" target="_blank" rel="noopener">Government Gazette Repository</a>
+    </div>
+  </div>
 
   <input type="text" id="search" placeholder="Filter by title or site…">
 
