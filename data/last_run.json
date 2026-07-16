@@ -1,9 +1,12 @@
 {
-  "ran_at": "2026-07-16T16:51:21.810737+00:00",
+  "ran_at": "2026-07-16T21:49:02.893914+00:00",
   "sites_checked": 8,
   "new_items": 0,
   "errors": [
     "ERROR scraping 'Central Bank of Malta - All Publications & Research': 403 Client Error: Forbidden for url: https://www.centralbankmalta.org/en/all-pubs-res",
+    "ERROR scraping 'Standards Commissioner - Other Documents': HTTPSConnectionPool(host='standardscommissioner.mt', port=443): Max retries exceeded with url: /other-documents/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='standardscommissioner.mt', port=443) at 0x7f1452d10810>, 'Connection to standardscommissioner.mt timed out. (connect timeout=30)'))",
+    "ERROR scraping 'Standards Commissioner - Case Reports': HTTPSConnectionPool(host='standardscommissioner.mt', port=443): Max retries exceeded with url: /case-reports/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='standardscommissioner.mt', port=443) at 0x7f1452d12910>, 'Connection to standardscommissioner.mt timed out. (connect timeout=30)'))",
+    "ERROR scraping 'Standards Commissioner - Annual Reports': HTTPSConnectionPool(host='standardscommissioner.mt', port=443): Max retries exceeded with url: /annual-reports/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='standardscommissioner.mt', port=443) at 0x7f1452ce8790>, 'Connection to standardscommissioner.mt timed out. (connect timeout=30)'))",
     "ERROR scraping 'Government Gazette Repository': 403 Client Error: Forbidden for url: https://www.gov.mt/en/Government/DOI/Government%20Gazette/Pages/Government-Gazzette-Repository.aspx",
     "ERROR scraping 'NSO Malta - News Releases': 403 Client Error: Forbidden for url: https://nso.gov.mt/news-releases/"
   ]
