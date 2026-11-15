@@ -1,8 +1,10 @@
 {
-  "ran_at": "2026-11-15T04:49:10.025046+00:00",
+  "ran_at": "2026-11-15T13:26:31.844539+00:00",
   "sites_checked": 8,
   "new_items": 0,
   "errors": [
-    "ERROR scraping 'Central Bank of Malta - All Publications & Research': 403 Client Error: Forbidden for url: https://www.centralbankmalta.org/en/all-pubs-res"
+    "ERROR scraping 'Central Bank of Malta - All Publications & Research': 403 Client Error: Forbidden for url: https://www.centralbankmalta.org/en/all-pubs-res",
+    "ERROR scraping 'Government Gazette Repository': 403 Client Error: Forbidden for url: https://departmentofinformation.gov.mt/mt/Home",
+    "ERROR scraping 'NSO Malta - News Releases': 403 Client Error: Forbidden for url: https://nso.gov.mt/news-releases/"
   ]
 }
